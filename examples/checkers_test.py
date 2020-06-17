@@ -6,28 +6,12 @@ from seoulai_gym.envs.checkers.agents import RandomAgentDark
 def main():
     env = gym.make("Checkers")
 
-    a1 = RandomAgentLight()
-    a2 = RandomAgentDark()
-
     obs = env.reset()
+    timer = 0
 
-    current_agent = a1
-    next_agent = a2
-
-    while True:
-        from_row, from_col, to_row, to_col = current_agent.act(obs)
-        obs, rew, done, info = env.step(current_agent, from_row, from_col, to_row, to_col)
-        current_agent.consume(obs, rew, done)
+    while timer < 1000:
         env.render()
-
-        if done:
-            print(f"Game over! {current_agent} agent wins.")
-            obs = env.reset()
-
-        # switch agents
-        temporary_agent = current_agent
-        current_agent = next_agent
-        next_agent = temporary_agent
+        timer+=1
 
     env.close()
 
