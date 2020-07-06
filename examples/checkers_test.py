@@ -9,7 +9,7 @@ def main():
     obs = env.reset()
     timer = 0
 
-    while timer < 1000:
+    while timer < 2000:
         env.render()
         timer+=1
 

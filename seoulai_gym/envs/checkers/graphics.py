@@ -52,6 +52,7 @@ class Graphics(Constants):
         """
         self.dark_piece_color = (0, 0, 0)
         self.light_piece_color = (255, 255, 255)
+        "add a red piece"
         self.king_piece_color = (64, 64, 64)
         self.original_piece_square_color = (160, 0, 255)
         self.possible_moves_square_color = (160, 190, 255)

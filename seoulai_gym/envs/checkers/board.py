@@ -64,16 +64,28 @@ class Board(Constants, Rules):
         Note: Dark pieces should be ALWAYS on the top of the board.
         """
         half_size = self.size//2
+        # half_size = self.size
         self.board_list = [
-            sum([[None, DarkPiece()] for _ in range(half_size)], []),
-            sum([[DarkPiece(), None] for _ in range(half_size)], []),
-            sum([[None, DarkPiece()] for _ in range(half_size)], []),
+            # sum([[DarkPiece(), LightPiece()] for _ in range(4)], []),
+            sum([[DarkPiece(), None,None,None,None,LightPiece(),None,None] ], []),
             sum([[None] for _ in range(self.size)], []),
             sum([[None] for _ in range(self.size)], []),
-            sum([[LightPiece(), None] for _ in range(half_size)], []),
-            sum([[None, LightPiece()] for _ in range(half_size)], []),
-            sum([[LightPiece(), None] for _ in range(half_size)], []),
+            sum([[None] for _ in range(self.size)], []),
+            sum([[None] for _ in range(self.size)], []),
+            sum([[None] for _ in range(self.size)], []),
+            sum([[None] for _ in range(self.size)], []),
+            sum([[None] for _ in range(self.size)], []),
         ]
+        # self.board_list = [
+        #     sum([[None, DarkPiece()] for _ in range(half_size)], []),
+        #     sum([[DarkPiece(), None] for _ in range(half_size)], []),
+        #     sum([[None, DarkPiece()] for _ in range(half_size)], []),
+        #     sum([[None] for _ in range(self.size)], []),
+        #     sum([[None] for _ in range(self.size)], []),
+        #     sum([[LightPiece(), None] for _ in range(half_size)], []),
+        #     sum([[None, LightPiece()] for _ in range(half_size)], []),
+        #     sum([[LightPiece(), None] for _ in range(half_size)], []),
+        # ]
 
     def update_rewards(
         self,
