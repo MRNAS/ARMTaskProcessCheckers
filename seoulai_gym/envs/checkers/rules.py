@@ -151,11 +151,15 @@ class Rules(object):
             return False
 
         # cant move in opposite direction, except king
-        if p.direction == Constants().UP and from_row < to_row and not p.king:
-            return False
+        #deleted rule to allow race
+        #race only in one direction
+        # if p.direction == Constants().UP and from_row < to_row and not p.king:
+        #     return False
+        # if p.direction == Constants().DOWN and from_row < to_row and not p.king:
+        #     return False
 
-        if p.direction == Constants().DOWN and from_row > to_row and not p.king:
-            return False
+        # if p.direction == Constants().DOWN and from_row > to_row and not p.king:
+        #     return False
 
         # cant jump over itself or empty square
         between_row, between_col = Rules.get_between_position(from_row, from_col, to_row, to_col)

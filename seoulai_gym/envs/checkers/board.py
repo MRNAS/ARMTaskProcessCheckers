@@ -18,13 +18,20 @@ from seoulai_gym.envs.checkers.utils import generate_random_move
 class Rewards(object):
     def __init__(self):
         self._rew = SimpleNamespace(
+            moveback=-3,
+            moveback1=-2,
+            moveback2=-1,
             default=1.0,
+            moveforward=2.0, #
+            moveforward1=3.0,
+            moveforward2=4.0,
+            # smallmoves=5.0, #
             invalid_move=0.0,
             move_opponent_piece=0.0,
             remove_opponent_piece=5.0,
-            become_king=7.0,
-            opponent_no_pieces=10.0,
-            opponent_no_valid_move=20.0,
+            become_king=20.0, #7
+            opponent_no_pieces=0.0, #10.0
+            opponent_no_valid_move=0.0, #20.0
         )
 
     def __getitem__(self, name: str):
@@ -64,15 +71,19 @@ class Board(Constants, Rules):
         Note: Dark pieces should be ALWAYS on the top of the board.
         """
         half_size = self.size//2
-        # half_size = self.size
         self.board_list = [
             # sum([[DarkPiece(), LightPiece()] for _ in range(4)], []),
+            # sum([[DarkPiece(), None,None,None,None,LightPiece(),None,None] ], []),
+            sum([[None] for _ in range(self.size)], []),
+            sum([[None] for _ in range(self.size)], []),
             sum([[DarkPiece(), None,None,None,None,LightPiece(),None,None] ], []),
+            # sum([[DarkPiece(), None,None,None,None,LightPiece(),None,None] ], []),
+            # sum([[DarkPiece(), None,None,None,None,LightPiece(),None,None] ], []),
+            # sum([[DarkPiece(), None,None,None,None,LightPiece(),None,None] ], []),
             sum([[None] for _ in range(self.size)], []),
             sum([[None] for _ in range(self.size)], []),
             sum([[None] for _ in range(self.size)], []),
-            sum([[None] for _ in range(self.size)], []),
-            sum([[None] for _ in range(self.size)], []),
+            
             sum([[None] for _ in range(self.size)], []),
             sum([[None] for _ in range(self.size)], []),
         ]
@@ -173,17 +184,58 @@ class Board(Constants, Rules):
                 info.update({"removed": ((between_row, between_col), p_between)})
                 rew = self.rewards["remove_opponent_piece"]
 
-        # become king
+        #move back penalty
         p = self.board_list[to_row][to_col]
-        if (to_row == 0 and p.direction == self.UP) or (to_row == self.size-1 and p.direction == self.DOWN):
+        if (to_row == self.size-8 and p.direction == self.DOWN) or (to_row == self.size-4 and p.direction == self.UP):
+            # p.make_king()
+            # info.update({"winning": (to_row, to_col)})
+            rew = self.rewards["moveback"]
+
+        p = self.board_list[to_row][to_col]
+        if (to_row == self.size-7 and p.direction == self.DOWN) or (to_row == self.size-4 and p.direction == self.UP):
+            # p.make_king()
+            info.update({"losing": (to_row, to_col)})
+            rew = self.rewards["moveback1"]
+        
+        p = self.board_list[to_row][to_col]
+        if (to_row == self.size-6 and p.direction == self.DOWN) or (to_row == self.size-4 and p.direction == self.UP):
+            # p.make_king()
+            info.update({"losing": (to_row, to_col)})
+            rew = self.rewards["moveback2"]
+
+        #move forward reward
+        p = self.board_list[to_row][to_col]
+        if (to_row == self.size-4 and p.direction == self.DOWN) or (to_row == self.size-4 and p.direction == self.UP):
+            # p.make_king()
+            info.update({"winning": (to_row, to_col)})
+            rew = self.rewards["moveforward"]
+
+        p = self.board_list[to_row][to_col]
+        if (to_row == self.size-3 and p.direction == self.DOWN) or (to_row == self.size-3 and p.direction == self.UP):
+            # p.make_king()
+            info.update({"winning": (to_row, to_col)})
+            rew = self.rewards["moveforward1"]
+        
+        p = self.board_list[to_row][to_col]
+        if (to_row == self.size-2 and p.direction == self.DOWN) or (to_row == self.size-2 and p.direction == self.UP):
+            # p.make_king()
+            info.update({"winning": (to_row, to_col)})
+            rew = self.rewards["moveforward2"]
+
+        # become king wins
+        p = self.board_list[to_row][to_col]
+        # if (to_row == 0 and p.direction == self.UP) or (to_row == self.size-1 and p.direction == self.DOWN): #old
+        if (to_row == self.size-1 and p.direction == self.DOWN) or (to_row == self.size-1 and p.direction == self.UP):
             p.make_king()
             info.update({"king": (to_row, to_col)})
             rew = self.rewards["become_king"]
+            done = True
 
         # end of game?
         if len(self.get_positions(self.board_list, self.get_opponent_type(p.ptype), self.size)) == 0:
             # opponent lost all his pieces
-            done = True
+            # done = True #old
+            done = False
             rew = self.rewards["opponent_no_pieces"]
             info.update({"opponent_no_pieces": True})
 
@@ -225,5 +277,6 @@ class Board(Constants, Rules):
         obs = board_list
         rew = rewards["opponent_no_valid_move"]
         info.update({"opponent_invalid_move": True})
-        done = True
+        # done = True
+        done = False
         return obs, rew, done, info
