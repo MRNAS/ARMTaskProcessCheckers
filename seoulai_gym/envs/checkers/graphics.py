@@ -18,7 +18,7 @@ class Graphics(Constants):
         self,
         num_squares: int=8,
         window_size: int=600,
-        board_image: str="board.png",
+        board_image: str="board2.png",
     ):
         self.num_squares = num_squares
         self.window_size = window_size
