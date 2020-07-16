@@ -4,9 +4,10 @@ seoulai.com
 2018
 """
 import seoulai_gym as gym
-from seoulai_gym.envs.checkers.agents import RandomAgentLight
-from seoulai_gym.envs.checkers.agents import RandomAgentDark
-
+# from seoulai_gym.envs.checkers.agents import RandomAgentLight
+# from seoulai_gym.envs.checkers.agents import RandomAgentDark
+from seoulai_gym.envs.checkers.dynamicprogrammingagents import RandomAgentLight
+from seoulai_gym.envs.checkers.dynamicprogrammingagents import RandomAgentDark
 
 def main():
     env = gym.make("Checkers")

@@ -7,6 +7,7 @@ from typing import Tuple
 from typing import Dict
 from typing import List
 from types import SimpleNamespace
+import numpy as np
 
 from seoulai_gym.envs.checkers.base import Constants
 from seoulai_gym.envs.checkers.base import DarkPiece
@@ -77,7 +78,7 @@ class Board(Constants, Rules):
             sum([[None] for _ in range(self.size)], []),
             sum([[None] for _ in range(self.size)], []),
             sum([[None, None, None,None,None,LightPiece(),None,None] ], []), ##two agents
-            sum([[None, DarkPiece(), None,None,None,None,None,None] ], []), ##two agents
+            sum([[None, None, None,None,None,None,None,None] ], []), ##two agents
             # sum([[None, None,None,None,LightPiece(),None,None,None] ], []), ##one agents
             # sum([[DarkPiece(), None,None,None,None,LightPiece(),None,None] ], []),
             # sum([[DarkPiece(), None,None,None,None,LightPiece(),None,None] ], []),
@@ -148,38 +149,44 @@ class Board(Constants, Rules):
         info = {}
         done = False
 
-        if not self._can_opponent_move(self.board_list, self.get_opponent_type(ptype), self.size):
-            return self._opponent_cant_move(self.board_list, self.rewards, info)
+        # if not self._can_opponent_move(self.board_list, self.get_opponent_type(ptype), self.size):
+        #     print("condition1")
+        #     return self._opponent_cant_move(self.board_list, self.rewards, info)
 
         # general invalid move
-        if not self.validate_move(self.board_list, from_row, from_col, to_row, to_col):
-            rew = self.rewards["invalid_move"]
-            info.update({"invalid_move": (from_row, from_col, to_row, to_col)})
+        # if not self.validate_move(self.board_list, from_row, from_col, to_row, to_col):
+        #     rew = self.rewards["invalid_move"]
+        #     info.update({"invalid_move": (from_row, from_col, to_row, to_col)})
+        #     print("condition2")
 
-            from_row, from_col, to_row, to_col = generate_random_move(
-                self.board_list,
-                ptype,
-                self.size,
-            )
+        #     from_row, from_col, to_row, to_col = generate_random_move(
+        #         self.board_list,
+        #         ptype,
+        #         self.size,
+        #     )
 
         # don't move with opponent's piece
-        if ptype != self.board_list[from_row][from_col].ptype:
-            rew = self.rewards["move_opponent_piece"]
-            info.update({"move_opponent_piece": (from_row, from_col)})
+        # if ptype != self.board_list[from_row][from_col].ptype:
+        #     rew = self.rewards["move_opponent_piece"]
+        #     info.update({"move_opponent_piece": (from_row, from_col)})
+        #     print("condition3")
 
-            from_row, from_col, to_row, to_col = generate_random_move(
-                self.board_list,
-                ptype,
-                self.size,
-            )
+        #     from_row, from_col, to_row, to_col = generate_random_move(
+        #         self.board_list,
+        #         ptype,
+        #         self.size,
+        #     )
 
         # move piece
         info_update = self.execute_move(from_row, from_col, to_row, to_col)
+        # print(from_row, from_col, to_row, to_col)
         info.update(info_update)
+        # print(info_update)
 
         # remove opponent's piece
         between_row, between_col = self.get_between_position(from_row, from_col, to_row, to_col)
         if between_row is not None and between_col is not None:
+            print("condition4")
             p_between = self.board_list[between_row][between_col]
             if p_between is not None:
                 self.board_list[between_row][between_col] = None
@@ -189,6 +196,7 @@ class Board(Constants, Rules):
         #move back penalty
         p = self.board_list[to_row][to_col]
         if (to_row == self.size-8 and p.direction == self.DOWN) or (to_row == self.size-4 and p.direction == self.UP):
+            print("condition5")
             # p.make_king()
             # info.update({"winning": (to_row, to_col)})
             rew = self.rewards["moveback"]
@@ -234,18 +242,20 @@ class Board(Constants, Rules):
             done = True
 
         # end of game?
-        if len(self.get_positions(self.board_list, self.get_opponent_type(p.ptype), self.size)) == 0:
-            # opponent lost all his pieces
-            # done = True #old
-            done = False
-            rew = self.rewards["opponent_no_pieces"]
-            info.update({"opponent_no_pieces": True})
-
-        if not self._can_opponent_move(self.board_list, self.get_opponent_type(ptype), self.size):
-            return self._opponent_cant_move(self.board_list, self.rewards, info)
+        # if len(self.get_positions(self.board_list, self.get_opponent_type(p.ptype), self.size)) == 0:
+        #     # opponent lost all his pieces
+        #     # done = True #old
+        #     done = False
+        #     rew = self.rewards["opponent_no_pieces"]
+        #     info.update({"opponent_no_pieces": True})
+        done = False 
+        # if not self._can_opponent_move(self.board_list, self.get_opponent_type(ptype), self.size):
+        #     print("tacos")
+        #     return self._opponent_cant_move(self.board_list, self.rewards, info)
 
         obs = self.board_list
-
+        # print("tacos")
+        # print(obs)
         return obs, rew, done, info
 
     def execute_move(
@@ -255,6 +265,7 @@ class Board(Constants, Rules):
         to_row: int,
         to_col: int,
     ) -> Dict:
+        # print(to_row,to_col)
         self.board_list[to_row][to_col] = self.board_list[from_row][from_col]
         self.board_list[from_row][from_col] = None
         return {"moved": ((from_row, from_col), (to_row, to_col))}

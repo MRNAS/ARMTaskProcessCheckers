@@ -1,3 +1,144 @@
+"""
+Martin Kersner, m.kersner@gmail.com
+seoulai.com
+2018
+Modified by Manuel Retana
+2020
+"""
+from abc import ABC
+from abc import abstractmethod
+from typing import List
+from typing import Tuple
+from typing import Dict
+from typing import Optional
+import random
+
+from seoulai_gym.envs.checkers.base import Constants
+from seoulai_gym.envs.checkers.rules import Rules
+from seoulai_gym.envs.checkers.utils import generate_random_move
+
+
+class Agent(ABC, Constants, Rules):
+    @abstractmethod
+    def __init__(
+        self,
+        name: str,
+        ptype: int,
+    ):
+        self._ptype = ptype
+        self._name = name
+
+    @abstractmethod
+    def act(
+        self,
+        obs,
+    ):
+        pass
+
+    @abstractmethod
+    def consume(
+        self,
+        obs,
+        reward: float,
+        done: bool,
+    ) -> None:
+        pass
+
+    @property
+    def ptype(self):
+        return self._ptype
+
+    @ptype.setter
+    def ptype(self, _ptype):
+        if _ptype == self.DARK or _ptype == self.LIGHT:
+            return _ptype
+        else:
+            raise ValueError("Invalid piece type.")
+
+    @property
+    def name(self):
+        if self.ptype == self.DARK:
+            return f"DARK {self._name}"
+        elif self.ptype == self.LIGHT:
+            return f"LIGHT {self._name}"
+
+    def __str__(self):
+        return self._name
+
+
+class RandomAgent(Agent):
+    def __init__(
+        self,
+        ptype: int,
+    ):
+        """Initialize random agent.
+
+        Args:
+            name: name of agent.
+            ptype: type of piece that agent is responsible for.
+        """
+        if ptype == Constants().DARK:
+            name = "RandomAgentDark"
+        elif ptype == Constants().LIGHT:
+            name = "RandomAgentLight"
+        else:
+            raise ValueError
+
+        super().__init__(name, ptype)
+
+    def act(
+        self,
+        board: List[List],
+    ) -> Tuple[int, int, int, int]:
+        """
+        Choose a piece and its possible moves randomly.
+        Pieces and moves are chosen from all current valid possibilities.
+
+        Args:
+            board: information about positions of pieces.
+
+        Returns:
+            Current and new location of piece.
+        """
+        # rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_random_move(
+        rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_dynamic_move(
+            board,
+            self.ptype,
+            len(board),
+        )
+        return rand_from_row, rand_from_col, rand_to_row, rand_to_col
+
+    def consume(
+        self,
+        obs: List[List],
+        reward: float,
+        done: bool,
+    ) -> None:
+        """Agent processes information returned by environment based on agent's latest action.
+        Random agent does not need `reward` or `done` variables, but this method is called anyway
+        when used with other agents.
+
+        Args:
+            board: information about positions of pieces.
+            reward: reward for perfomed step.
+            done: information about end of game.
+        """
+        pass
+
+
+class RandomAgentLight(RandomAgent):
+    def __init__(
+        self,
+    ):
+        super().__init__(Constants().LIGHT)
+
+
+class RandomAgentDark(RandomAgent):
+    def __init__(
+        self,
+    ):
+        super().__init__(Constants().DARK)
+
 #this class is used by the search algorithm to define search nodes consisting
 #of the state of the node, the action taken to reach the node, and its parent
 #node
@@ -164,56 +305,85 @@ def smSearch(smToSearch, initialState = None, goalTest = None, maxNodes \
                   lambda s, a: smToSearch.getNextValues(s, a)[0], \
                   maxNodes = maxNodes, depthFirst = depthFirst, DP = DP)
 
-
-
 #here we define a state machine that takes a legal chess move for a knight as
 #input and outputs the resulting position of the knight, where the goal is to
 #reach the top-right position of the chessboard (see README for details)
 class KnightMoves(SM):
     global x
     global y
-    x=input("What is the goal x position  coordinate?4")
-    y=input("What is the goal y position  coordinate?1")
-    print(SM)
+    global x1
+    global y2
+    x = 3
+    y = 1
+    # x1 = 3   
+    # y2 = 1
+    # x=eval(input("What is the goal x position  coordinate?4"))
+    # y=eval(input("What is the goal y position  coordinate?1"))
+    # print(SM)
     legalInputs = ['ul', 'ur', 'dl', 'dr'] #checkers
     def __init__(self, s):
         self.startState = s
     def getNextValues(self, state, inp):
         if inp == 'ul' and state[0] > 0 and state[1] < 6:
             nextState = (state[0] - 1, state[1] + 1)
-            print(1)
+            # print((1))
             return (nextState, nextState)
         elif inp == 'ur' and state[0] < 7 and state[1] < 6:
             nextState = (state[0] + 1, state[1] + 1)
-            print(2)
+            # print((2))
             return (nextState, nextState)
         elif inp == 'dl' and state[0] > 0 and state[1] > 1:
             nextState = (state[0] - 1, state[1] - 1)
-            print(3)
+            # print((3))
             return (nextState, nextState)
         elif inp == 'dr' and state[0] < 7 and state[1] > 1:
             nextState = (state[0] + 1, state[1] - 1)
-            print(4)
+            # print((4))
             return (nextState, nextState)
         else:
-            print(5)
+            # print((5))
             return (state, state)
     def done(self, state):
         goal=()
         goal=(x,y)
         return state == goal #goal state
 
-#here we store the results of applying the algorithm to the two problems
-#in the variables farmer_goat and knight, respectively
-# #farmer_goat = smSearch(FarmerGoatWolfCabbageClass())
+def generate_dynamic_move(board: List[List],ptype: int,board_size: int,)-> Dict[Tuple[int, int], List[Tuple[int, int]]]:
+    """Generate dynamic programming move from all `ptype` valid moves but does not execute it.
 
-#red
-# knight = smSearch(KnightMoves((5,5)))
-# print(knight)
+    Args:
+    board: (List[List[Piece]]) State of the game.
+    ptype: (int) type of piece for which random move will be generated
+    board_size: (int) size of board
+    """
+    # rand_to_row, rand_to_col = random.choice(valid_moves[(rand_from_row, rand_from_col)])
 
-#black
-knight = smSearch(KnightMoves((2,5)))
-print(knight)
-print(knight[1][1])
-# next_move=knight[1][1]
-# print(next_move[0])
+    # valid_moves = Rules.generate_valid_moves(board, ptype, board_size)
+    # rand_from_row, rand_from_col = random.choice(list(valid_moves.keys()))
+    # dyn_from_row = rand_from_row
+    # dyn_from_col = rand_from_col
+    moves = {}
+    positions = Rules.get_positions(board, ptype, board_size)
+    # print(board)
+        # print(positions)
+        # print(positions[0][0])
+        # print(positions[0][1])
+    print(positions,"positions")
+    dyn_from_row = positions[0][0]
+    dyn_from_row = 7 - dyn_from_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
+    dyn_from_col = positions[0][1] #columns are the same
+    print('starting x:',dyn_from_row)
+    print('starting y:',dyn_from_col)
+
+    knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col))) #current position
+    dyn_from_row = 7 - dyn_from_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
+    # print(knight[1][1])
+    next_move=knight[1][1]
+    dyn_to_row = next_move[0]
+    dyn_to_col = next_move[1]
+    print(dyn_to_row, "pre")
+    print(dyn_to_col)
+    dyn_to_row = 7 - dyn_to_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
+    print(dyn_to_row,"post")
+    print(dyn_to_col)
+    return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col #new position

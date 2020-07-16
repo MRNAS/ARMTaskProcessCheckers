@@ -82,6 +82,7 @@ class Checkers(Constants, Rules):
         self.possible_moves = self.get_valid_moves(self.board.board_list, from_row, from_col)
         self.piece_location = (from_row, from_col)
         obs, rew, done, info = self.board.move(agent.ptype, from_row, from_col, to_row, to_col)
+        # print(to_row,to_col, obs)
         return copy.deepcopy(obs), rew, done, info
 
     def reset(

@@ -170,38 +170,27 @@ def smSearch(smToSearch, initialState = None, goalTest = None, maxNodes \
 #input and outputs the resulting position of the knight, where the goal is to
 #reach the top-right position of the chessboard (see README for details)
 class KnightMoves(SM):
-    global x
-    global y
-    x=input("What is the goal x position  coordinate?4")
-    y=input("What is the goal y position  coordinate?1")
-    print(SM)
+    # legalInputs = ['ul', 'ur', 'dl', 'dr', 'lu', 'ld', 'ru', 'rd'] #horse
     legalInputs = ['ul', 'ur', 'dl', 'dr'] #checkers
     def __init__(self, s):
         self.startState = s
     def getNextValues(self, state, inp):
         if inp == 'ul' and state[0] > 0 and state[1] < 6:
             nextState = (state[0] - 1, state[1] + 1)
-            print(1)
             return (nextState, nextState)
         elif inp == 'ur' and state[0] < 7 and state[1] < 6:
             nextState = (state[0] + 1, state[1] + 1)
-            print(2)
             return (nextState, nextState)
         elif inp == 'dl' and state[0] > 0 and state[1] > 1:
             nextState = (state[0] - 1, state[1] - 1)
-            print(3)
             return (nextState, nextState)
         elif inp == 'dr' and state[0] < 7 and state[1] > 1:
             nextState = (state[0] + 1, state[1] - 1)
-            print(4)
             return (nextState, nextState)
         else:
-            print(5)
             return (state, state)
     def done(self, state):
-        goal=()
-        goal=(x,y)
-        return state == goal #goal state
+        return state == (4,1) #goal state
 
 #here we store the results of applying the algorithm to the two problems
 #in the variables farmer_goat and knight, respectively
@@ -212,8 +201,6 @@ class KnightMoves(SM):
 # print(knight)
 
 #black
-knight = smSearch(KnightMoves((2,5)))
+knight = smSearch(KnightMoves((1,4)))
 print(knight)
-print(knight[1][1])
-# next_move=knight[1][1]
-# print(next_move[0])
+

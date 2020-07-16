@@ -172,8 +172,8 @@ def smSearch(smToSearch, initialState = None, goalTest = None, maxNodes \
 class KnightMoves(SM):
     global x
     global y
-    x=input("What is the goal x position  coordinate?4")
-    y=input("What is the goal y position  coordinate?1")
+    x=eval(input("What is the goal x position  coordinate?"))
+    y=eval(input("What is the goal y position  coordinate?"))
     print(SM)
     legalInputs = ['ul', 'ur', 'dl', 'dr'] #checkers
     def __init__(self, s):
@@ -181,22 +181,22 @@ class KnightMoves(SM):
     def getNextValues(self, state, inp):
         if inp == 'ul' and state[0] > 0 and state[1] < 6:
             nextState = (state[0] - 1, state[1] + 1)
-            print(1)
+            print((1))
             return (nextState, nextState)
         elif inp == 'ur' and state[0] < 7 and state[1] < 6:
             nextState = (state[0] + 1, state[1] + 1)
-            print(2)
+            print((2))
             return (nextState, nextState)
         elif inp == 'dl' and state[0] > 0 and state[1] > 1:
             nextState = (state[0] - 1, state[1] - 1)
-            print(3)
+            print((3))
             return (nextState, nextState)
         elif inp == 'dr' and state[0] < 7 and state[1] > 1:
             nextState = (state[0] + 1, state[1] - 1)
-            print(4)
+            print((4))
             return (nextState, nextState)
         else:
-            print(5)
+            print((5))
             return (state, state)
     def done(self, state):
         goal=()
@@ -214,6 +214,6 @@ class KnightMoves(SM):
 #black
 knight = smSearch(KnightMoves((2,5)))
 print(knight)
-print(knight[1][1])
+print((knight[1][1]))
 # next_move=knight[1][1]
 # print(next_move[0])
