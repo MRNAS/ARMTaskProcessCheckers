@@ -313,8 +313,8 @@ class KnightMoves(SM):
     global y
     global x1
     global y2
-    x = 3
-    y = 1
+    x = 6
+    y = 3
     # x1 = 3   
     # y2 = 1
     # x=eval(input("What is the goal x position  coordinate?4"))
@@ -328,16 +328,16 @@ class KnightMoves(SM):
             nextState = (state[0] - 1, state[1] + 1)
             # print((1))
             return (nextState, nextState)
-        elif inp == 'ur' and state[0] < 7 and state[1] < 6:
-            nextState = (state[0] + 1, state[1] + 1)
+        elif inp == 'ur' and state[0] < 7 and state[1] > 1:
+            nextState = (state[0] + 1, state[1] - 1)
             # print((2))
             return (nextState, nextState)
         elif inp == 'dl' and state[0] > 0 and state[1] > 1:
             nextState = (state[0] - 1, state[1] - 1)
             # print((3))
             return (nextState, nextState)
-        elif inp == 'dr' and state[0] < 7 and state[1] > 1:
-            nextState = (state[0] + 1, state[1] - 1)
+        elif inp == 'dr' and state[0] < 7 and state[1] < 6:
+            nextState = (state[0] + 1, state[1] + 1)
             # print((4))
             return (nextState, nextState)
         else:
@@ -368,22 +368,22 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,)-> Dict[
         # print(positions)
         # print(positions[0][0])
         # print(positions[0][1])
-    print(positions,"positions")
+    # print(positions,"positions")
     dyn_from_row = positions[0][0]
-    dyn_from_row = 7 - dyn_from_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
+    # dyn_from_row = 7 - dyn_from_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
     dyn_from_col = positions[0][1] #columns are the same
     print('starting x:',dyn_from_row)
     print('starting y:',dyn_from_col)
 
     knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col))) #current position
-    dyn_from_row = 7 - dyn_from_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
+    # dyn_from_row = 7 - dyn_from_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
     # print(knight[1][1])
     next_move=knight[1][1]
     dyn_to_row = next_move[0]
     dyn_to_col = next_move[1]
-    print(dyn_to_row, "pre")
-    print(dyn_to_col)
-    dyn_to_row = 7 - dyn_to_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
-    print(dyn_to_row,"post")
-    print(dyn_to_col)
+    # print(dyn_to_row, "pre")
+    # print(dyn_to_col)
+    # dyn_to_row = 7 - dyn_to_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
+    # print(dyn_to_row,"post")
+    # print(dyn_to_col)
     return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col #new position

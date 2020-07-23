@@ -183,16 +183,16 @@ class KnightMoves(SM):
             nextState = (state[0] - 1, state[1] + 1)
             print((1))
             return (nextState, nextState)
-        elif inp == 'ur' and state[0] < 7 and state[1] < 6:
-            nextState = (state[0] + 1, state[1] + 1)
+        elif inp == 'ur' and state[0] < 7 and state[1] > 1:
+            nextState = (state[0] + 1, state[1] - 1)
             print((2))
             return (nextState, nextState)
         elif inp == 'dl' and state[0] > 0 and state[1] > 1:
             nextState = (state[0] - 1, state[1] - 1)
             print((3))
             return (nextState, nextState)
-        elif inp == 'dr' and state[0] < 7 and state[1] > 1:
-            nextState = (state[0] + 1, state[1] - 1)
+        elif inp == 'dr' and state[0] < 7 and state[1] < 6:
+            nextState = (state[0] + 1, state[1] + 1)
             print((4))
             return (nextState, nextState)
         else:
@@ -212,7 +212,7 @@ class KnightMoves(SM):
 # print(knight)
 
 #black
-knight = smSearch(KnightMoves((2,5)))
+knight = smSearch(KnightMoves((0,0)))
 print(knight)
 print((knight[1][1]))
 # next_move=knight[1][1]
