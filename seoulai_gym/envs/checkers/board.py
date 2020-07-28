@@ -228,11 +228,11 @@ class Board(Constants, Rules):
             info.update({"winning": (to_row, to_col)})
             rew = self.rewards["moveforward1"]
         
-        p = self.board_list[to_row][to_col]
-        if (to_row == self.size-2 and p.direction == self.DOWN) or (to_row == self.size-2 and p.direction == self.UP):
-            # p.make_king()
-            info.update({"winning": (to_row, to_col)})
-            rew = self.rewards["moveforward2"]
+        # p = self.board_list[to_row][to_col]
+        # if (to_row == self.size-2 and p.direction == self.DOWN) or (to_row == self.size-2 and p.direction == self.UP):
+        #     # p.make_king()
+        #     info.update({"winning": (to_row, to_col)})
+        #     rew = self.rewards["moveforward2"]
 
         # become king wins
         p = self.board_list[to_row][to_col]

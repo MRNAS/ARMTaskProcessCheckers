@@ -389,16 +389,16 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,flag,huma
     dyn_from_col = positions[0][1] #columns are the same
     print('starting x:',dyn_from_row)
     print('starting y:',dyn_from_col)
-
+    # if dyn_from_row == 6 and dyn_from_col == 3:
+    #     dyn_to_row = dyn_from_row
+    #     dyn_to_col = dyn_from_col
+    # elif dyn_from_row == 6 and dyn_from_col == 4:
+    #     dyn_to_row = dyn_from_row
+    #     dyn_to_col = dyn_from_col
+    # else: 
     knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col),flag)) #current position
-    # dyn_from_row = 7 - dyn_from_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
-    # print(knight[1][1])
     next_move=knight[1][1]
     dyn_to_row = next_move[0]
     dyn_to_col = next_move[1]
-    # print(dyn_to_row, "pre")
-    # print(dyn_to_col)
-    # dyn_to_row = 7 - dyn_to_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
-    # print(dyn_to_row,"post")
-    # print(dyn_to_col)
+    
     return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col #new position
