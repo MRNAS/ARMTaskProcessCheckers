@@ -75,7 +75,7 @@ class Board(Constants, Rules):
         self.board_list = [
             # sum([[DarkPiece(), LightPiece()] for _ in range(4)], []),
             # sum([[DarkPiece(), None,None,None,None,LightPiece(),None,None] ], []),
-            sum([[None, None, None,None,None,None,None,LightPiece()] ], []),
+            sum([[DarkPiece(), None, None,None,None,None,None,LightPiece()] ], []),
             sum([[None] for _ in range(self.size)], []),
             sum([[None] for _ in range(self.size)], []),
             # sum([[None, None, None,None,None,LightPiece(),None,None] ], []), ##two agents

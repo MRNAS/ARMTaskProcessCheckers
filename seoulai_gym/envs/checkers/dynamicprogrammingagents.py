@@ -66,7 +66,7 @@ class Agent(ABC, Constants, Rules):
         return self._name
 
 
-class RandomAgent(Agent):
+class Agent(Agent):
     def __init__(
         self,
         ptype: int,
@@ -78,9 +78,9 @@ class RandomAgent(Agent):
             ptype: type of piece that agent is responsible for.
         """
         if ptype == Constants().DARK:
-            name = "RandomAgentDark"
+            name = "AgentDark"
         elif ptype == Constants().LIGHT:
-            name = "RandomAgentLight"
+            name = "AgentLight"
         else:
             raise ValueError
 
@@ -89,6 +89,8 @@ class RandomAgent(Agent):
     def act(
         self,
         board: List[List],
+        flag,
+        humanflag
     ) -> Tuple[int, int, int, int]:
         """
         Choose a piece and its possible moves randomly.
@@ -100,11 +102,14 @@ class RandomAgent(Agent):
         Returns:
             Current and new location of piece.
         """
+        # print("flag in act",flag)
         # rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_random_move(
         rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_dynamic_move(
             board,
             self.ptype,
             len(board),
+            flag,
+            humanflag,
         )
         return rand_from_row, rand_from_col, rand_to_row, rand_to_col
 
@@ -126,14 +131,14 @@ class RandomAgent(Agent):
         pass
 
 
-class RandomAgentLight(RandomAgent):
+class AgentLight(Agent):
     def __init__(
         self,
     ):
         super().__init__(Constants().LIGHT)
 
 
-class RandomAgentDark(RandomAgent):
+class AgentDark(Agent):
     def __init__(
         self,
     ):
@@ -296,7 +301,7 @@ class SM:
 #state of the machine to its goal state (determined by the machine's done
 #method)
 def smSearch(smToSearch, initialState = None, goalTest = None, maxNodes \
-             = 10000, depthFirst = False, DP = True):
+             = 10000, depthFirst = False, DP = True,):
     if initialState == None:
         initialState = smToSearch.startState
     if goalTest == None:
@@ -311,18 +316,15 @@ def smSearch(smToSearch, initialState = None, goalTest = None, maxNodes \
 class KnightMoves(SM):
     global x
     global y
-    global x1
-    global y2
-    x = 6
-    y = 3
-    # x1 = 3   
-    # y2 = 1
     # x=eval(input("What is the goal x position  coordinate?4"))
     # y=eval(input("What is the goal y position  coordinate?1"))
     # print(SM)
     legalInputs = ['ul', 'ur', 'dl', 'dr'] #checkers
-    def __init__(self, s):
+    def __init__(self, s, flag):
         self.startState = s
+        self.flag = flag
+        # print(self.flag)
+
     def getNextValues(self, state, inp):
         if inp == 'ul' and state[0] > 0 and state[1] < 6:
             nextState = (state[0] - 1, state[1] + 1)
@@ -343,12 +345,23 @@ class KnightMoves(SM):
         else:
             # print((5))
             return (state, state)
+
     def done(self, state):
+        flag = self.flag
+        # print(flag, "flag in DP")
+        if flag == True:
+            # White Goal
+            x = 6
+            y = 3
+        else:
+            # Black Goal
+            x = 6  
+            y = 4
         goal=()
         goal=(x,y)
         return state == goal #goal state
 
-def generate_dynamic_move(board: List[List],ptype: int,board_size: int,)-> Dict[Tuple[int, int], List[Tuple[int, int]]]:
+def generate_dynamic_move(board: List[List],ptype: int,board_size: int,flag,humanflag,)-> Dict[Tuple[int, int], List[Tuple[int, int]]]:
     """Generate dynamic programming move from all `ptype` valid moves but does not execute it.
 
     Args:
@@ -362,6 +375,8 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,)-> Dict[
     # rand_from_row, rand_from_col = random.choice(list(valid_moves.keys()))
     # dyn_from_row = rand_from_row
     # dyn_from_col = rand_from_col
+    # print(flag,"flag in dynamic")
+    global bw
     moves = {}
     positions = Rules.get_positions(board, ptype, board_size)
     # print(board)
@@ -375,7 +390,7 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,)-> Dict[
     print('starting x:',dyn_from_row)
     print('starting y:',dyn_from_col)
 
-    knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col))) #current position
+    knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col),flag)) #current position
     # dyn_from_row = 7 - dyn_from_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
     # print(knight[1][1])
     next_move=knight[1][1]
