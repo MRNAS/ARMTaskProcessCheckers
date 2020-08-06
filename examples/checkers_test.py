@@ -82,7 +82,7 @@ def main():
         obs, rew, done, info = env.step(current_agent, from_row, from_col, to_row, to_col)
         current_agent.consume(obs, rew, done)
         env.render()
-        time.sleep(1) #time delay
+        time.sleep(5) #time delay
         
         if current_agent == a1:
             score1 += rew

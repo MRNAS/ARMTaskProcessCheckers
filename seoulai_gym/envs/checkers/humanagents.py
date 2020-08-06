@@ -78,9 +78,9 @@ class Agent(Agent):
             ptype: type of piece that agent is responsible for.
         """
         if ptype == Constants().DARK:
-            name = "AgentDark"
+            name = "HumanDark"
         elif ptype == Constants().LIGHT:
-            name = "AgentLight"
+            name = "HumanLight"
         else:
             raise ValueError
 
@@ -102,15 +102,25 @@ class Agent(Agent):
         Returns:
             Current and new location of piece.
         """
-        # print("flag in act",flag)
-        # rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_random_move(
-        rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_dynamic_move(
-            board,
-            self.ptype,
-            len(board),
-            flag,
-            humanflag,
-        )
+        #Decision between DP human and Random Human 50 % optimality
+        #this could be edited to adjust levels of optimality
+        decision = random.choice([0,1])
+        if decision <0.5:
+            print("random move human")
+            rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_random_move(
+                board,
+                self.ptype,
+                len(board),
+            )
+        else:
+            print("DP move human")    
+            rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_dynamic_move(
+                board,
+                self.ptype,
+                len(board),
+                flag,
+                humanflag,
+            )
         return rand_from_row, rand_from_col, rand_to_row, rand_to_col
 
     def consume(
@@ -131,14 +141,14 @@ class Agent(Agent):
         pass
 
 
-class AgentLight(Agent):
+class HumanLight(Agent):
     def __init__(
         self,
     ):
         super().__init__(Constants().LIGHT)
 
 
-class AgentDark(Agent):
+class HumanDark(Agent):
     def __init__(
         self,
     ):
@@ -350,12 +360,12 @@ class KnightMoves(SM):
         flag = self.flag
         # print(flag, "flag in DP")
         if flag == True:
-            # print("robot seeking 6,3")
+            # print("human seeking 6,3")
             # White Goal
             x = 6
             y = 3
         else:
-            # print("robot seeking 6,3")
+            # print("human seeking 6,3")
             # Black Goal
             x = 6  
             y = 3
@@ -399,7 +409,7 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,flag,huma
     #     dyn_to_col = dyn_from_col
     # else: 
     knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col),flag)) #current position
-    print(knight, "robot")
+    print(knight, "human")
     next_move=knight[1][1]
     dyn_to_row = next_move[0]
     dyn_to_col = next_move[1]
