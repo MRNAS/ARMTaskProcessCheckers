@@ -112,27 +112,10 @@ def main():
             flag = False
             # print("b")
         
-        # #dynamic vs random agents
-        # if current_agent == a1:
-        #     # print("dyn")
-        #     from_row, from_col, to_row, to_col = current_agent.act(obs,flag,humanflag)
-        # elif current_agent == a2:
-        #     # print("dyn")
-        #     from_row, from_col, to_row, to_col = current_agent.act(obs,flag,humanflag)
-        # elif current_agent == a3:
-        #     # print("ran")
-        #     from_row, from_col, to_row, to_col = current_agent.act(obs)
-        # elif current_agent == a4:
-        #     # print("ran")
-        #     from_row, from_col, to_row, to_col = current_agent.act(obs)
-        # else:
-        #     print("error choosing agents")
-        
         from_row, from_col, to_row, to_col = current_agent.act(obs,flag,humanflag)
-            
-        # print(to_row, to_col)
         obs, rew, done, info = env.step(current_agent, from_row, from_col, to_row, to_col)
         current_agent.consume(obs, rew, done)
+
         env.render()
         time.sleep(1) #time delay
         counter += 1
@@ -152,15 +135,16 @@ def main():
 
         # print(from_row,from_col,"status")
         # stopping conditions for switch if got to goal
+        print("objective location:",from_row, from_col,"counter:",counter)
         if from_row == 5 and from_col == 2:
             Whitedone = True
-        elif from_row == 5 and from_col == 3:
+        elif from_row == 5 and from_col == 2:
             Blackdone = True
 
         if done:
             print(f"Game over! {current_agent} agent wins.")
             # obs = env.reset()
-        elif Whitedone == True and Blackdone == True:
+        elif Whitedone == True or Blackdone == True:
             print(f"Game over! {current_agent} agent wins.")
             # obs = env.reset()
             env.close()

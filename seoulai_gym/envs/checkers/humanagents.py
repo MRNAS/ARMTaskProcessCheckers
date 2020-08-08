@@ -381,37 +381,31 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,flag,huma
     ptype: (int) type of piece for which random move will be generated
     board_size: (int) size of board
     """
-    # rand_to_row, rand_to_col = random.choice(valid_moves[(rand_from_row, rand_from_col)])
-
-    # valid_moves = Rules.generate_valid_moves(board, ptype, board_size)
-    # rand_from_row, rand_from_col = random.choice(list(valid_moves.keys()))
-    # dyn_from_row = rand_from_row
-    # dyn_from_col = rand_from_col
-    # print(flag,"flag in dynamic")
-    global bw
-    moves = {}
-    positions = Rules.get_positions(board, ptype, board_size)
-    # print(board)
-        # print(positions)
-        # print(positions[0][0])
-        # print(positions[0][1])
-    # print(positions,"positions")
-    dyn_from_row = positions[0][0]
-    # dyn_from_row = 7 - dyn_from_row # conversion due to origin difference between seoulai [lefttop] and DP [leftbottom]
-    dyn_from_col = positions[0][1] #columns are the same
+    valid_moves = Rules.generate_valid_moves(board, ptype, board_size)
+    #chooses random piece from pieces available
+    dyn_from_row, dyn_from_col = random.choice(list(valid_moves.keys()))
+    
     print('starting x:',dyn_from_row)
     print('starting y:',dyn_from_col)
-    # if dyn_from_row == 6 and dyn_from_col == 3:
-    #     dyn_to_row = dyn_from_row
-    #     dyn_to_col = dyn_from_col
-    # elif dyn_from_row == 6 and dyn_from_col == 4:
-    #     dyn_to_row = dyn_from_row
-    #     dyn_to_col = dyn_from_col
-    # else: 
+ 
     knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col),flag)) #current position
     print(knight, "human")
+    print(valid_moves, "valid moves for human")
     next_move=knight[1][1]
     dyn_to_row = next_move[0]
     dyn_to_col = next_move[1]
+    #if next move is invalid move randomly
+    validlist = valid_moves[(dyn_from_row, dyn_from_col)]
+    print("valid list:",validlist)
+    for i in range(len(validlist)):
+        if (dyn_to_row,dyn_to_col) == validlist[i]:
+            print("valid move within DP guidelines")
+            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col #new position
+        elif i == len(validlist):
+            #if piece will eat the other piece move randomly even if DP agent
+            print("DP move about to eat other piece so valid random move")
+            dyn_to_row, dyn_to_col = random.choice(valid_moves[(dyn_from_row, dyn_from_col)])
+            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col
+
     
-    return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col #new position
+    
