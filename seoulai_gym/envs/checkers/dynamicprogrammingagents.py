@@ -89,8 +89,7 @@ class Agent(Agent):
     def act(
         self,
         board: List[List],
-        flag,
-        humanflag
+        glist
     ) -> Tuple[int, int, int, int]:
         """
         Choose a piece and its possible moves randomly.
@@ -102,14 +101,13 @@ class Agent(Agent):
         Returns:
             Current and new location of piece.
         """
-        # print("flag in act",flag)
+        # print(glist,"glist in actrobot")
         # rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_random_move(
         rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_dynamic_move(
             board,
             self.ptype,
             len(board),
-            flag,
-            humanflag,
+            glist,
         )
         return rand_from_row, rand_from_col, rand_to_row, rand_to_col
 
@@ -320,9 +318,10 @@ class KnightMoves(SM):
     # y=eval(input("What is the goal y position  coordinate?1"))
     # print(SM)
     legalInputs = ['ul', 'ur', 'dl', 'dr'] #checkers
-    def __init__(self, s, flag):
+    def __init__(self, s, flag, glist):
         self.startState = s
         self.flag = flag
+        self.glist = glist
         # print(self.flag)
 
     def getNextValues(self, state, inp):
@@ -348,22 +347,24 @@ class KnightMoves(SM):
 
     def done(self, state):
         flag = self.flag
+        glist = self.glist
+        # print(glist,"glist")
         # print(flag, "flag in DP")
         if flag == True:
             # print("robot seeking 6,3")
             # White Goal
-            x = 6
-            y = 3
+            x = int(glist[0][0])
+            y = int(glist[0][1])
         else:
             # print("robot seeking 6,3")
             # Black Goal
-            x = 6  
-            y = 3
+            x = int(glist[1][0])
+            y = int(glist[1][1])
         goal=()
         goal=(x,y)
         return state == goal #goal state
 
-def generate_dynamic_move(board: List[List],ptype: int,board_size: int,flag,humanflag,)-> Dict[Tuple[int, int], List[Tuple[int, int]]]:
+def generate_dynamic_move(board: List[List],ptype: int,board_size: int,glist,)-> Dict[Tuple[int, int], List[Tuple[int, int]]]:
     """Generate dynamic programming move from all `ptype` valid moves but does not execute it.
 
     Args:
@@ -374,13 +375,26 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,flag,huma
     valid_moves = Rules.generate_valid_moves(board, ptype, board_size)
     #chooses random piece from pieces available
     dyn_from_row, dyn_from_col = random.choice(list(valid_moves.keys()))
+    
     print('starting x:',dyn_from_row)
     print('starting y:',dyn_from_col)
+
+    flag = 0
+    #identifies which piece we are moving with flag
+    decision = list(valid_moves.keys())
+    if (dyn_from_row, dyn_from_col) == decision[0]:
+        flag = True
+        # print("objective 1")
+    elif (dyn_from_row, dyn_from_col) == decision[1]:
+        flag = False
+        # print("objective 2")
  
-    knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col),flag)) #current position
+    knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col),flag,glist)) #current position
     print(knight, "robot")
     valid_moves = Rules.generate_valid_moves(board, ptype, board_size)
     print(valid_moves, "valid moves available for robot")
+    if len(knight) < 2:
+        return dyn_from_row, dyn_from_col, dyn_from_row, dyn_from_col
     next_move=knight[1][1]
     dyn_to_row = next_move[0]
     dyn_to_col = next_move[1]

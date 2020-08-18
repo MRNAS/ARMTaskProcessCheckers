@@ -23,15 +23,15 @@ def main():
 
     #robot agents
     a1 = AgentLight() 
-    a2 = AgentDark()
+    # a2 = AgentDark()
 
     #human agents
     a3 = HumanLight()
-    a4 = HumanDark()
+    # a4 = HumanDark()
 
     #random agents
     a5 = RandomAgentLight()
-    a6 = RandomAgentDark()
+    # a6 = RandomAgentDark()
 
     obs = env.reset()
 
@@ -73,6 +73,14 @@ def main():
     humans = 1
     nplayers = 64 - emptycells # change if board size changes
     print("nplayers in the game:", nplayers)
+    
+    #creates and requests list of objectives
+    glist = []
+    for i in range(0,nplayers):
+        goal=(input("type (x,y) 6365 objective in xy format for each goal and press enter:"))
+        glist.append(goal)
+    glist=tuple(glist)
+    print(glist)
 
 
     # current_agent = a1 #robot agent
@@ -98,21 +106,18 @@ def main():
 
     while True:
 
-         #required to for agent's goals in DP
-        if current_agent == a1:
-            flag = True
-            # print("a")
-        elif current_agent == a4:
-            flag = True
-            # print("a")
-        elif current_agent == a2:
-            flag = False
-            # print("b")
-        elif current_agent == a3:
-            flag = False
-            # print("b")
+        #  #required to for agent's goals in DP
+        # if current_agent == a1:
+        #     flag = True
+        #     # print("a")
+        # elif current_agent == a3:
+        #     flag = False
+        #     # print("b")
+        # elif current_agent == a5:
+        #     flag = False
+        #     # print("b")
         
-        from_row, from_col, to_row, to_col = current_agent.act(obs,flag,humanflag)
+        from_row, from_col, to_row, to_col = current_agent.act(obs,glist)
         obs, rew, done, info = env.step(current_agent, from_row, from_col, to_row, to_col)
         current_agent.consume(obs, rew, done)
 
@@ -123,12 +128,12 @@ def main():
         if current_agent == a1:
             score1 += rew
             print(f"Reward:{rew}, total rewards: {score1} by: {current_agent}")
-        elif current_agent == a4:
-            score1 += rew
-            print(f"Reward:{rew}, total rewards: {score1} by: {current_agent}")
-        elif current_agent == a2:
-            score2 += rew
-            print(f"Reward:{rew}, total rewards: {score2} by: {current_agent}")
+        # elif current_agent == a4:
+        #     score1 += rew
+        #     print(f"Reward:{rew}, total rewards: {score1} by: {current_agent}")
+        # elif current_agent == a2:
+        #     score2 += rew
+        #     print(f"Reward:{rew}, total rewards: {score2} by: {current_agent}")
         elif current_agent == a3:
             score2 += rew
             print(f"Reward:{rew}, total rewards: {score2} by: {current_agent}")
@@ -136,15 +141,17 @@ def main():
         # print(from_row,from_col,"status")
         # stopping conditions for switch if got to goal
         print("objective location:",from_row, from_col,"counter:",counter)
-        if from_row == 5 and from_col == 2:
+        if from_row == 6 and from_col == 3:
+            print("white is done")
             Whitedone = True
-        elif from_row == 5 and from_col == 2:
+        elif from_row == 6 and from_col == 5:
+            print("black is done")
             Blackdone = True
 
         if done:
             print(f"Game over! {current_agent} agent wins.")
             # obs = env.reset()
-        elif Whitedone == True or Blackdone == True:
+        elif Whitedone == True and Blackdone == True:
             print(f"Game over! {current_agent} agent wins.")
             # obs = env.reset()
             env.close()
@@ -156,10 +163,15 @@ def main():
             turns = nplayers
             if counter % turns == 0: #human (even turn)
                 #select any piece of the board at random
-                piecedecisionh = random.choice([1, nplayers])
                 temporary_agent = current_agent
                 current_agent = next_agent
                 next_agent = temporary_agent
+                if Whitedone == True:
+                    print("white is done agents")
+                    current_agent = a3
+                elif Blackdone ==True:
+                    print("black is done agents")
+                    current_agent = a1
             else: #robot (odd turn)
                 current_agent = a1
                 next_agent = a3
