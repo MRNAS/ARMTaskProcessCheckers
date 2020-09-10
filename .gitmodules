@@ -1,0 +1,3 @@
+[submodule "despot"]
+	path = despot
+	url = git@github.com:MRNAS/despot.git

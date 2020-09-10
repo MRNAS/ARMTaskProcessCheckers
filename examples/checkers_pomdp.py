@@ -79,6 +79,7 @@ def main():
     for i in range(0,nplayers):
         goal=(input("type (x,y) 6365 objective in xy format for each goal and press enter:"))
         glist.append(goal)
+    # glist=('63','65')
     glist=tuple(glist)
     print(glist)
 
@@ -117,14 +118,26 @@ def main():
         #     flag = False
         #     # print("b")
         
-        from_row, from_col, to_row, to_col = current_agent.act(obs,glist)
+        from_row, from_col, to_row, to_col, flag = current_agent.act(obs,glist)
         obs, rew, done, info = env.step(current_agent, from_row, from_col, to_row, to_col)
         current_agent.consume(obs, rew, done)
 
+        print(flag,"flag turn")
         env.render()
-        time.sleep(1) #time delay
+        time.sleep(3) #time delay
         counter += 1
-        
+
+        # valid_moves = Rules.generate_valid_moves(obs,ptype,board_size)
+        # reward = 0
+        # #identifies which piece we are moving with flag
+        # decision = list(valid_moves.keys())
+        # if (dyn_from_row, dyn_from_col) == decision[0]:
+        #     reward = True
+        #     # print("objective 1")
+        # elif (dyn_from_row, dyn_from_col) == decision[1]:
+        #     reward = False
+        #     # print("objective 2")
+
         if current_agent == a1:
             score1 += rew
             print(f"Reward:{rew}, total rewards: {score1} by: {current_agent}")

@@ -103,13 +103,13 @@ class Agent(Agent):
         """
         # print(glist,"glist in actrobot")
         # rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_random_move(
-        rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_dynamic_move(
+        rand_from_row, rand_from_col, rand_to_row, rand_to_col, flag = generate_dynamic_move(
             board,
             self.ptype,
             len(board),
             glist,
         )
-        return rand_from_row, rand_from_col, rand_to_row, rand_to_col
+        return rand_from_row, rand_from_col, rand_to_row, rand_to_col, flag
 
     def consume(
         self,
@@ -384,17 +384,17 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,glist,)->
     decision = list(valid_moves.keys())
     if (dyn_from_row, dyn_from_col) == decision[0]:
         flag = True
-        # print("objective 1")
+        # score1 piece
     elif (dyn_from_row, dyn_from_col) == decision[1]:
         flag = False
-        # print("objective 2")
+        # score2 piece
  
     knight = smSearch(KnightMoves((dyn_from_row,dyn_from_col),flag,glist)) #current position
     print(knight, "robot")
     valid_moves = Rules.generate_valid_moves(board, ptype, board_size)
     print(valid_moves, "valid moves available for robot")
     if len(knight) < 2:
-        return dyn_from_row, dyn_from_col, dyn_from_row, dyn_from_col
+        return dyn_from_row, dyn_from_col, dyn_from_row, dyn_from_col, flag
     next_move=knight[1][1]
     dyn_to_row = next_move[0]
     dyn_to_col = next_move[1]
@@ -403,9 +403,9 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,glist,)->
     for i in range(len(validlist)):
         if (dyn_to_row,dyn_to_col) == validlist[i]:
             print("valid move within DP guidelines")
-            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col #new position
+            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col, flag #new position
         elif i == len(validlist):
             #if piece will eat the other piece move randomly even if DP agent
             print("DP move about to eat other piece so valid random move")
             dyn_to_row, dyn_to_col = random.choice(valid_moves[(dyn_from_row, dyn_from_col)])
-            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col
+            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col, flag

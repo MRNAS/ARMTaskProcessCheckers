@@ -15,7 +15,8 @@ import random
 
 from seoulai_gym.envs.checkers.base import Constants
 from seoulai_gym.envs.checkers.rules import Rules
-from seoulai_gym.envs.checkers.utils import generate_random_move
+# from seoulai_gym.envs.checkers.utils import generate_random_move
+#created own generate random move function
 
 
 class Agent(ABC, Constants, Rules):
@@ -107,20 +108,20 @@ class Agent(Agent):
         decision = random.choice([0,1])
         if decision <0.5:
             print("random move human")
-            rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_random_move(
+            rand_from_row, rand_from_col, rand_to_row, rand_to_col, flag = generate_random_move(
                 board,
                 self.ptype,
                 len(board),
             )
         else:
             print("DP move human")    
-            rand_from_row, rand_from_col, rand_to_row, rand_to_col = generate_dynamic_move(
+            rand_from_row, rand_from_col, rand_to_row, rand_to_col, flag = generate_dynamic_move(
                 board,
                 self.ptype,
                 len(board),
                 glist,
             )
-        return rand_from_row, rand_from_col, rand_to_row, rand_to_col
+        return rand_from_row, rand_from_col, rand_to_row, rand_to_col, flag
 
     def consume(
         self,
@@ -404,7 +405,7 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,glist,)->
     print(knight, "human")
     print(valid_moves, "valid moves for human")
     if len(knight) < 2:
-        return dyn_from_row, dyn_from_col, dyn_from_row, dyn_from_col
+        return dyn_from_row, dyn_from_col, dyn_from_row, dyn_from_col, flag
     next_move=knight[1][1]
     dyn_to_row = next_move[0]
     dyn_to_col = next_move[1]
@@ -414,12 +415,44 @@ def generate_dynamic_move(board: List[List],ptype: int,board_size: int,glist,)->
     for i in range(len(validlist)):
         if (dyn_to_row,dyn_to_col) == validlist[i]:
             print("valid move within DP guidelines")
-            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col #new position
+            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col, flag #new position
         elif i == len(validlist):
             #if piece will eat the other piece move randomly even if DP agent
             print("DP move about to eat other piece so valid random move")
             dyn_to_row, dyn_to_col = random.choice(valid_moves[(dyn_from_row, dyn_from_col)])
-            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col
+            return dyn_from_row, dyn_from_col, dyn_to_row, dyn_to_col, flag
+
+def generate_random_move(
+    board: List[List],
+    ptype: int,
+    board_size: int,
+):
+    """Generate random move from all `ptype` valid moves but does not execute it.
+
+    Args:
+        board: (List[List[Piece]]) State of the game.
+        ptype: (int) type of piece for which random move will be generated
+        board_size: (int) size of board
+    """
+    valid_moves = Rules.generate_valid_moves(board, ptype, board_size)
+    #chooses random piece from pieces available
+    rand_from_row, rand_from_col = random.choice(list(valid_moves.keys()))
+
+    print('starting x:',rand_from_row)
+    print('starting y:',rand_from_col)
+
+    flag = 0
+    #identifies which piece we are moving with flag
+    decision = list(valid_moves.keys())
+    if (rand_from_row, rand_from_col) == decision[0]:
+        flag = True
+        # print("objective 1")
+    elif (rand_from_row, rand_from_col) == decision[1]:
+        flag = False
+        # print("objective 2")
+    
+    rand_to_row, rand_to_col = random.choice(valid_moves[(rand_from_row, rand_from_col)])
+    return rand_from_row, rand_from_col, rand_to_row, rand_to_col, flag
 
     
     
